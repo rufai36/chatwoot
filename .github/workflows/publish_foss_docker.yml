@@ -16,10 +16,9 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_REPO: adrianachaves/chatwoot
+  DOCKER_REPO: chatwoot/chatwoot
 
 jobs:
-
   build:
     strategy:
       fail-fast: false
@@ -52,10 +51,11 @@ jobs:
 
       - name: Set Docker Tags
         run: |
+          SANITIZED_REF=$(echo "$GIT_REF" | sed 's/\//-/g')
           if [ "${{ github.ref_name }}" = "master" ]; then
             echo "DOCKER_TAG=${DOCKER_REPO}:latest-ce" >> $GITHUB_ENV
           else
-            echo "DOCKER_TAG=${DOCKER_REPO}:${{ github.ref_name }}-ce" >> $GITHUB_ENV
+            echo "DOCKER_TAG=${DOCKER_REPO}:${SANITIZED_REF}-ce" >> $GITHUB_ENV
           fi
 
       - name: Set up QEMU
@@ -121,10 +121,11 @@ jobs:
         env:
           GIT_REF: ${{ github.head_ref || github.ref_name }}
         run: |
+          SANITIZED_REF=$(echo "$GIT_REF" | sed 's/\//-/g')
           if [ "${{ github.ref_name }}" = "master" ]; then
             TAG="${DOCKER_REPO}:latest-ce"
           else
-            TAG="${DOCKER_REPO}:${{ github.ref_name }}-ce"
+            TAG="${DOCKER_REPO}:${SANITIZED_REF}-ce"
           fi
           
           docker buildx imagetools create -t $TAG \
@@ -134,37 +135,11 @@ jobs:
         env:
           GIT_REF: ${{ github.head_ref || github.ref_name }}
         run: |
+          SANITIZED_REF=$(echo "$GIT_REF" | sed 's/\//-/g')
           if [ "${{ github.ref_name }}" = "master" ]; then
             TAG="${DOCKER_REPO}:latest-ce"
           else
-            TAG="${DOCKER_REPO}:${{ github.ref_name }}-ce"
+            TAG="${DOCKER_REPO}:${SANITIZED_REF}-ce"
           fi
           
           docker buildx imagetools inspect $TAG
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: merge
-    steps:
-      - name: Deploy to Contabo Server
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.CONTABO_HOST }}
-          username: ${{ secrets.CONTABO_USER }}
-          password: ${{ secrets.CONTABO_PASSWORD }}
-          script: |
-            docker stop chatwoot-container || true
-            docker rm chatwoot-container || true
-            
-            docker rmi ${{ env.DOCKER_REPO }}:latest-ce || true
-            docker rmi ${{ env.DOCKER_REPO }}:${{ github.ref_name }}-ce || true
-            
-            docker pull ${{ env.DOCKER_REPO }}:${{ github.ref_name }}-ce
-            docker run -d \
-            --name chatwoot-container \
-            -p 3500:3000 \
-            -e DATABASE_URL=postgres://postgres:Password1!@154.12.253.212:5432/chatwoot_production \
-            -e REDIS_URL=redis://redis:6379 \
-            -e SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }} \
-            -e RAILS_ENV=production \
-            ${{ env.DOCKER_REPO }}:${{ github.ref_name }}-ce

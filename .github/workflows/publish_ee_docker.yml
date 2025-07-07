@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_REPO: adrianachaves/chatwoot
+  DOCKER_REPO: chatwoot/chatwoot
 
 jobs:
   build:
