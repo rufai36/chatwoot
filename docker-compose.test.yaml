@@ -47,7 +47,7 @@ services:
       - postgres:/data/postgres
     environment:
       - POSTGRES_DB=chatwoot
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=rufusiyya
       - POSTGRES_PASSWORD=
 
   redis:

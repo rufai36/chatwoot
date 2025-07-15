@@ -91,8 +91,8 @@ services:
       - postgres:/data/postgres
     environment:
       - POSTGRES_DB=chatwoot
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=POSTGRES_PASSWORD##
+      - POSTGRES_USER=rufusiyya
+      - POSTGRES_PASSWORD=N81JMFYZ49BXsAARMryi@1999NuXQRjbI3PMQwa3yt
 
   redis:
     image: redis:alpine

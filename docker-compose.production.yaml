@@ -43,9 +43,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=chatwoot
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=rufusiyya
       # Please provide your own password.
-      - POSTGRES_PASSWORD=POSTGRES_PASSWORD##
+      - POSTGRES_PASSWORD=N81JMFYZ49BXsAARMryi@1999NuXQRjbI3PMQwa3yt
 
   redis:
     image: redis:alpine
