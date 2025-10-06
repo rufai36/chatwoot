@@ -31,6 +31,10 @@ jobs:
           ln -sf $HOME/docker-compose $HOME/docker-compose-cli
           export PATH=$HOME:$PATH
 
+      - name: Build base image
+        run: |
+          docker build -t adrianachaves/chatwoot:development -f docker/Dockerfile .
+
       - name: Build and push Docker images
         run: |
           docker compose -f docker-compose.yaml build
