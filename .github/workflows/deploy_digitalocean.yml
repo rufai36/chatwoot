@@ -26,9 +26,10 @@ jobs:
       - name: Install Docker Compose CLI
         run: |
           DOCKER_COMPOSE_VERSION=2.20.2
-          curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+          curl -L "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/docker-compose
+          chmod +x $HOME/docker-compose
+          ln -sf $HOME/docker-compose $HOME/docker-compose-cli
+          export PATH=$HOME:$PATH
 
       - name: Build and push Docker images
         run: |
