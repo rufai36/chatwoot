@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  base: &base
+  chatwoot:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
@@ -16,7 +16,6 @@ services:
     env_file: .env
 
   rails:
-    <<: *base
     build:
       context: .
       dockerfile: ./docker/dockerfiles/rails.Dockerfile
@@ -28,6 +27,7 @@ services:
       - cache:/app/tmp/cache
       - bundle:/usr/local/bundle
     depends_on:
+      - chatwoot
       - postgres
       - redis
       - vite
@@ -44,7 +44,9 @@ services:
     command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
 
   sidekiq:
-    <<: *base
+    build:
+      context: .
+      dockerfile: ./docker/dockerfiles/rails.Dockerfile
     image: adrianachaves/chatwoot-rails:development
     volumes:
       - ./:/app:delegated
@@ -53,6 +55,7 @@ services:
       - cache:/app/tmp/cache
       - bundle:/usr/local/bundle
     depends_on:
+      - chatwoot
       - postgres
       - redis
       - mailhog
@@ -62,7 +65,6 @@ services:
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
 
   vite:
-    <<: *base
     build:
       context: .
       dockerfile: ./docker/dockerfiles/vite.Dockerfile
@@ -73,6 +75,8 @@ services:
       - packs:/app/public/packs
       - cache:/app/tmp/cache
       - bundle:/usr/local/bundle
+    depends_on:
+      - chatwoot
     ports:
       - "3036:3036" # Vite dev server
     environment:
