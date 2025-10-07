@@ -41,15 +41,15 @@ jobs:
 
       - name: Build base image
         run: |
-          docker build -t adrianachaves/chatwoot:develop -f docker/Dockerfile .
+          docker build -t adrianachaves/chatwoot:development -f docker/Dockerfile .
 
       - name: Build and push Docker images
         run: |
           docker compose -f docker-compose.yaml build
           # Push each image explicitly
-          docker push adrianachaves/chatwoot:develop
-          docker push adrianachaves/chatwoot-rails:develop
-          docker push adrianachaves/chatwoot-vite:develop
+          docker push adrianachaves/chatwoot:development
+          docker push adrianachaves/chatwoot-rails:development
+          docker push adrianachaves/chatwoot-vite:development
 
       - name: Deploy to DigitalOcean via SSH
         uses: appleboy/ssh-action@v0.1.7
